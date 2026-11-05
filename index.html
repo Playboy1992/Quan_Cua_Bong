@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quán Em Bống - Vỉa Hè Sống Động</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #070913;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .game-container {
+      width: 100%;
+      max-width: 480px;
+      background: linear-gradient(180deg, #130e1f 0%, #26163b 35%, #0f0a17 100%);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border: 2px solid #3c2552;
+      overflow: hidden;
+      box-shadow: 0 0 25px rgba(0,0,0,0.9);
+      min-height: 100vh;
+    }
+    /* Header Live */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 10;
+    }
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #ff2a6d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border: 2px solid #fff;
+      box-shadow: 0 0 10px #ff2a6d;
+    }
+    .live-badge {
+      background: #ff0055;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: bold;
+      animation: pulseLive 1.5s infinite;
+    }
+    @keyframes pulseLive {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Tiêu đề quán */
+    .shop-title {
+      text-align: center;
+      margin: 6px 0;
+      z-index: 10;
+    }
+    .shop-title h1 {
+      font-size: 28px;
+      color: #ffaa00;
+      text-shadow: 2px 2px 5px #000, 0 0 12px #ff5500;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+    }
+    .sub-title {
+      font-size: 11px;
+      color: #00f0ff;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    /* Bảng số liệu */
+    .stats-board {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(0, 0, 0, 0.65);
+      margin: 6px 10px;
+      padding: 8px 4px;
+      border-radius: 8px;
+      border: 1px solid #5a3e75;
+      z-index: 10;
+    }
+    .stat-item {
+      text-align: center;
+      font-size: 10px;
+      color: #bbb;
+    }
+    .stat-value {
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      display: block;
+    }
+
+    /* Khung chém gió / chat trực tiếp */
+    .chat-ticker {
+      background: rgba(20, 10, 30, 0.9);
+      margin: 0 10px 6px 10px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border-left: 3px solid #ff0055;
+      font-size: 11px;
+      color: #ffeb3b;
+      height: 26px;
+      overflow: hidden;
+      position: relative;
+      z-index: 10;
+    }
+    .chat-message {
+      white-space: nowrap;
+      animation: fadeInMsg 0.5s ease-out;
+    }
+    @keyframes fadeInMsg {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Banner thông báo */
+    .banner-text {
+      background: #ffd600;
+      color: #000;
+      text-align: center;
+      font-weight: bold;
+      padding: 3px;
+      font-size: 11px;
+      z-index: 10;
+    }
+
+    /* Menu & Xếp hạng */
+    .top-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 8px 10px;
+      z-index: 10;
+    }
+    .card-box {
+      background: rgba(30, 20, 45, 0.9);
+      border-radius: 8px;
+      padding: 6px;
+      border: 1px solid #5a3e75;
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 4px;
+      color: #ffca28;
+    }
+    .menu-item, .rank-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      margin-bottom: 3px;
+      padding: 1px 2px;
+    }
+    .free-badge {
+      background: #4caf50;
+      color: #fff;
+      font-size: 8px;
+      padding: 1px 3px;
+      border-radius: 3px;
+    }
+
+    /* Khu vực Vỉa Hè - Bàn nhậu & Người đi lại / Cây cối sống động */
+    .table-area {
+      position: relative;
+      background: radial-gradient(circle at center, #2e1f3d 0%, #1a1026 100%);
+      margin: 6px 10px;
+      padding: 12px 8px;
+      border-radius: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px 8px;
+      min-height: 250px;
+      border: 1px dashed #6b4c8a;
+      z-index: 10;
+    }
+    
+    /* Cây cối / Đèn đường trang trí sống động */
+    .street-decor {
+      position: absolute;
+      bottom: 5px;
+      left: 10px;
+      font-size: 18px;
+      animation: treeSway 3s infinite ease-in-out;
+      pointer-events: none;
+    }
+    .street-decor-right {
+      position: absolute;
+      bottom: 5px;
+      right: 10px;
+      font-size: 18px;
+      animation: treeSway 2.5s infinite ease-in-out reverse;
+      pointer-events: none;
+    }
+    @keyframes treeSway {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(5deg); }
+    }
+
+    /* Người đi ngang qua vỉa hè động */
+    .walking-pedestrian {
+      position: absolute;
+      bottom: 2px;
+      left: -40px;
+      font-size: 14px;
+      white-space: nowrap;
+      animation: walkAcross 12s infinite linear;
+      z-index: 15;
+      pointer-events: none;
+      background: rgba(0,0,0,0.6);
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+    @keyframes walkAcross {
+      0% { left: -50px; }
+      100% { left: 100%; }
+    }
+
+    /* Bàn nhậu */
+    .table-node {
+      background: #e53935;
+      height: 38px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+      border: 1px solid #ff6b6b;
+    }
+    .table-number {
+      background: #fff;
+      color: #000;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 9px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Khách ngồi ăn nhậu */
+    .guest {
+      position: absolute;
+      top: -15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: popIn 0.3s ease-out;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+    .guest-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      background: linear-gradient(45deg, #ffb74d, #ff2a6d);
+      animation: bounceGuest 1.8s infinite ease-in-out;
+    }
+    @keyframes bounceGuest {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    .guest-name {
+      font-size: 8px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #ffeb3b;
+      padding: 1px 4px;
+      border-radius: 3px;
+      white-space: nowrap;
+      margin-top: 1px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* Hiệu ứng Thả Tim / Tặng Hoa bay lơ lửng */
+    .floating-effect {
+      position: absolute;
+      bottom: 80px;
+      font-size: 20px;
+      animation: floatUpEffect 2.2s forwards ease-out;
+      z-index: 100;
+      pointer-events: none;
+    }
+    @keyframes floatUpEffect {
+      0% { transform: translateY(0) scale(0.5) rotate(0deg); opacity: 1; }
+      50% { transform: translateY(-130px) scale(1.3) rotate(15deg); opacity: 0.9; }
+      100% { transform: translateY(-260px) scale(1) rotate(-15deg); opacity: 0; }
+    }
+
+    /* Thanh điều khiển hành động */
+    .action-bar {
+      margin-top: auto;
+      padding: 10px;
+      background: rgba(10, 5, 20, 0.95);
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      z-index: 10;
+    }
+    .btn {
+      background: #ffb300;
+      color: #000;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 11px;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+      transition: transform 0.1s;
+    }
+    .btn:active { transform: scale(0.95); }
+    .btn-secondary { background: #ff2a6d; color: #fff; }
+    .btn-flower { background: #00e676; color: #000; }
+  </style>
+</head>
+<body>
+
+  <div class="game-container" id="gameContainer">
+    <!-- Header -->
+    <div class="header-bar">
+      <div class="user-profile">
+        <div class="avatar">B</div>
+        <span style="font-size: 13px; font-weight: bold;">Bống Official</span>
+      </div>
+      <div class="live-badge" id="viewerCount">28 đang xem</div>
+    </div>
+
+    <!-- Tiêu đề quán chuẩn 100% Quán Em Bống -->
+    <div class="shop-title">
+      <h1>Quán Em Bống</h1>
+      <div class="sub-title">VỈA HÈ SÔI ĐỘNG - CHÉM GIÓ & NHẬU QUÊN LỐI VỀ</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-board">
+      <div class="stat-item">ĐÃ BÁN<span class="stat-value" id="statSold">842</span></div>
+      <div class="stat-item">ĐANG NGỒI<span class="stat-value" id="statGuests">7</span></div>
+      <div class="stat-item">LẦN DÔ<span class="stat-value" id="statCheers">350</span></div>
+      <div class="stat-item">TẶNG HOA<span class="stat-value" id="statFlowers">128</span></div>
+    </div>
+
+    <!-- Khung chém gió trực tiếp -->
+    <div class="chat-ticker" id="chatTickerBox">
+      <div class="chat-message" id="chatMessageText">💬 [Hệ thống]: Chào mừng các bác ghé Quán Em Bống!</div>
+    </div>
+
+    <!-- Banner -->
+    <div class="banner-text">MỜI BIA / TẶNG HOA 🌸 để giao lưu – Thả tim ❤️ để quẩy tưng bừng!</div>
+
+    <!-- Menu & Ranking -->
+    <div class="top-section">
+      <div class="card-box">
+        <div class="card-title">📜 Thực đơn quán</div>
+        <div class="menu-item"><span>🥣 Lòng chảo đặc biệt</span></div>
+        <div class="menu-item"><span>🥗 Tráng trộn bánh đa</span></div>
+        <div class="menu-item"><span>🐚 Ốc luộc mắm gừng</span></div>
+        <div class="menu-item"><span>🍡 Chiên viên cá sốt</span> <span class="free-badge">FREE</span></div>
+        <div class="menu-item"><span>🍚 Rang bò cơm dưa</span></div>
+      </div>
+
+      <div class="card-box">
+        <div class="card-title">👑 VUA GỌI MÓN</div>
+        <div class="rank-item"><span>🥇 Thư Béo VIP</span> <strong>82 món</strong></div>
+        <div class="rank-item"><span>🥈 Hải Sẹo</span> <strong>64 món</strong></div>
+        <div class="rank-item"><span>🥉 Lan Mập</span> <strong>51 món</strong></div>
+        <div class="rank-item"><span>4. Tuấn Cọp</span> <strong>43 món</strong></div>
+        <div class="rank-item"><span>5. Nga Tây</span> <strong>39 món</strong></div>
+      </div>
+    </div>
+
+    <!-- Bàn nhậu vỉa hè & Cây cối sống động -->
+    <div class="table-area" id="tableGrid">
+      <div class="street-decor">🌴</div>
+      <div class="street-decor-right">🌳</div>
+      <div class="walking-pedestrian" id="walkingPedestrian">🚶‍♂️ <i>"Quán Em Bống nay đông vui thế!"</i></div>
+    </div>
+
+    <!-- Nút tương tác -->
+    <div class="action-bar">
+      <button class="btn" onclick="userActionCheer()">DÔ BIA 🍻</button>
+      <button class="btn btn-flower" onclick="userActionFlower()">TẶNG HOA 🌸</button>
+      <button class="btn btn-secondary" onclick="userActionHeart()">THẢ TIM ❤️</button>
+    </div>
+  </div>
+
+  <script>
+    const totalTables = 12;
+    const tableGrid = document.getElementById('tableGrid');
+    
+    // Khởi tạo 12 bàn nhựa đỏ
+    for (let i = 1; i <= totalTables; i++) {
+      const node = document.createElement('div');
+      node.className = 'table-node';
+      node.id = `table-${i}`;
+      node.innerHTML = `<div class="table-number">${i}</div>`;
+      tableGrid.appendChild(node);
+    }
+
+    // Khách hàng hiện tại
+    let guests = [
+      { table: 2, name: 'Tuấn Sẹo' },
+      { table: 5, name: 'Hòa Vinamilk' },
+      { table: 7, name: 'Hưng Sắn' },
+      { table: 8, name: 'Phương Thảo' },
+      { table: 10, name: 'Đạt Cối' },
+      { table: 11, name: 'Mai Anh' },
+      { table: 12, name: 'Sơn Gym' }
+    ];
+
+    let soldCount = 842;
+    let cheerCount = 350;
+    let flowerCount = 128;
+    let viewCount = 28;
+
+    const randomNames = ['Long Tóc Dài', 'Trung Kính', 'Vân Hugo', 'Nam Béo', 'Gió Lạnh', 'Hoàng Cọp', 'Thắng Biker', 'Trang Lé', 'Hà Mi'];
+    const chatSentences = [
+      "💬 [Hải Sẹo]: Chủ quán ơi cho xin thêm đĩa ốc luộc!",
+      "💬 [Thư Béo]: Dô 100% đi anh em ơi, quán Bống đỉnh quá!",
+      "💬 [Lan Mập]: Không say không về nhé chủ quán êi!",
+      "💬 [Khách vãng lai]: Mùi lòng chảo thơm phức góc phố luôn!",
+      "💬 [Tuấn Cọp]: Đã chuyển khoản, chốt đơn thêm 5 chai Sài Gòn!",
+      "💬 [Bống Official]: Cảm ơn các bác đã ghé ủng hộ quán em nhé ❤️"
+    ];
+
+    function renderGuests() {
+      document.querySelectorAll('.guest').forEach(el => el.remove());
+      guests.forEach(g => {
+        const table = document.getElementById(`table-${g.table}`);
+        if (table) {
+          const el = document.createElement('div');
+          el.className = 'guest';
+          el.innerHTML = `<div class="guest-avatar"></div><div class="guest-name">${g.name}</div>`;
+          table.appendChild(el);
+        }
+      });
+      document.getElementById('statGuests').innerText = guests.length;
+    }
+
+    // Hiệu ứng bay tim / hoa / bia
+    function spawnEffect(symbol) {
+      const container = document.getElementById('gameContainer');
+      const item = document.createElement('div');
+      item.className = 'floating-effect';
+      item.innerText = symbol;
+      item.style.right = (Math.random() * 260 + 50) + 'px';
+      container.appendChild(item);
+      setTimeout(() => item.remove(), 2200);
+    }
+
+    function userActionCheer() {
+      cheerCount += 5;
+      soldCount += 2;
+      document.getElementById('statCheers').innerText = cheerCount;
+      document.getElementById('statSold').innerText = soldCount;
+      spawnEffect('🍻');
+      spawnEffect('✨');
+    }
+
+    function userActionFlower() {
+      flowerCount += 1;
+      document.getElementById('statFlowers').innerText = flowerCount;
+      spawnEffect('🌸');
+      spawnEffect('💐');
+    }
+
+    function userActionHeart() {
+      soldCount += 1;
+      document.getElementById('statSold').innerText = soldCount;
+      spawnEffect('❤️');
+      spawnEffect('💖');
+    }
+
+    // Tự động cập nhật khách ra vào, chém gió và người đi bộ
+    setInterval(() => {
+      // Khách ra vào ngẫu nhiên
+      if(Math.random() > 0.4 && guests.length < 12) {
+        const empty = [];
+        for(let i=1; i<=12; i++) if(!guests.some(g => g.table === i)) empty.push(i);
+        if(empty.length > 0) {
+          const t = empty[Math.floor(Math.random() * empty.length)];
+          const n = randomNames[Math.floor(Math.random() * randomNames.length)];
+          guests.push({ table: t, name: n });
+          renderGuests();
+        }
+      } else if(guests.length > 4 && Math.random() > 0.6) {
+        guests.splice(Math.floor(Math.random() * guests.length), 1);
+        renderGuests();
+      }
+
+      // Đổi câu chém gió liên tục
+      const randomChat = chatSentences[Math.floor(Math.random() * chatSentences.length)];
+      document.getElementById('chatMessageText').innerText = randomChat;
+
+      // Lượng người xem dao động
+      viewCount = Math.floor(Math.random() * 12) + 25;
+      document.getElementById('viewerCount').innerText = viewCount + ' đang xem';
+
+      // Thỉnh thoảng bay hiệu ứng tự động
+      if(Math.random() > 0.6) spawnEffect(['❤️', '🌸', '🍻'][Math.floor(Math.random()*3)]);
+    }, 3500);
+
+    renderGuests();
+  </script>
+</body>
+</html>
